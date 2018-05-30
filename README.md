@@ -4,37 +4,39 @@
 
 KORAL_ROS is a ROS based computer vision pipeline, which combines GPU based feature detection, description and matching. 
 
-This repository serves as an extension to [KORAL], an extremely fast, highly accurate, 
+This repository serves as an extension to [KORAL](https://github.com/komrad36/KORAL), an extremely fast, highly accurate, 
 scale- and rotation-invariant CPU-GPU cooperative detector-descriptor that uses FAST
-keypoints and LATCH descriptors, combining it with CUDAK2NN, a super-fast GPU implementation 
+keypoints and LATCH descriptors, combining it with [CUDAK2NN](https://github.com/komrad36/CUDAK2NN), a super-fast GPU implementation 
 of a brute-force matcher for 512-bit binary descriptors, both originally developed by 
-Kareem Omar. All credits for these amazingly fast kernels go to the original author(s).
+[Kareem Omar](https://github.com/komrad36). All credits for these amazingly fast kernels go to the original author(s).
 
-KORAL and CUDAK2NN have been adapted into a real time framework, where images are read
-in succession, and detection and matching is attempted. The code subscribes to two topics
-imageL and imageR, simulating left and right camera views, performs feature extraction on 
+In this repository, KORAL and CUDAK2NN have been adapted into a real time framework, where images are read
+in succession on which detection and matching is performed. The sample code in koral_node.cpp subscribes to two ROS topics
+'imageL' and 'imageR', simulating left and right camera views, performs feature extraction on 
 both images and brute force matching between the two views. This is aimed at being a starting
 point for GPU based vision algorithms for autonomous vehicles.
 
-Dependencies:
+**Dependencies:**
 
-AVX2 capable CPU
-CUDA capable GPU
-ROS
-OpenCV (for retrieving keypoints and matches)
+* AVX2 capable CPU
+* CUDA capable GPU
+* ROS
+* OpenCV (for retrieving keypoints and matches)
 
 This code is meant only as an example to get started with, as numerous improvements can be 
-made to the current functionality (example: asynchronous detection for multiple images)
+made to the current functionality (example: asynchronous detection for multiple images).
 
-Sample benchmark: (i7-6770HQ, GTX 1080)
+**Sample benchmark:** (i7-6770HQ, GTX 1080)
 
-640x480 images: ~3ms per image for detection, ~1ms for matching.
-1920x1080 images: ~7.5ms per image for detection, ~5ms for matching.
+| Image resolution        | Detection (ms per image)           | Matching (ms)  |
+| :-------------: |:-------------:| :-----:|
+| 640x480      | 3 | 1 |
+| 1920x1080      | 7.5      |   5 |
 
-# License #
-KORAL is licensed under the MIT License : https://opensource.org/licenses/mit-license.php
+# Licenses #
+**KORAL is licensed under the MIT License : https://opensource.org/licenses/mit-license.php**
 
-Copyright(c) 2016 Kareem Omar, Christopher Parker
+**Copyright(c) 2016 Kareem Omar, Christopher Parker**
 
 Permission is hereby granted, free of charge,
 to any person obtaining a copy of this software and associated documentation
@@ -65,10 +67,10 @@ as described in the 2006 paper by Rosten and Drummond:
         Edward Rosten and Tom Drummond
 https://www.edwardrosten.com/work/rosten_2006_machine.pdf
 
-The FAST detector is BSD licensed:
+**The FAST detector is BSD licensed:**
 
-Copyright(c) 2006, 2008, 2009, 2010 Edward Rosten
-All rights reserved.
+**Copyright(c) 2006, 2008, 2009, 2010 Edward Rosten**
+**All rights reserved.**
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
