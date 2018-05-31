@@ -71,6 +71,10 @@ public:
 
 	~FeatureMatcher()
 	{
+	}
+
+	void freeGPUMemory()
+	{
 		cudaFree(d_descQ);
 		cudaFree(d_descT);
 		cudaFree(d_matches);

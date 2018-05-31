@@ -125,17 +125,14 @@ public:
 
 	~FeatureDetector()
 	{
-		freeGPUMemory();
-		cudaFree(d_triplets);
-		cudaFreeArray(d_trip_arr);
 	}
 	
 	void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 	{
 		cv_bridge::CvImagePtr imagePtr;
-	    imagePtr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::MONO8);
+	        imagePtr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::MONO8);
 		high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    	extractFeatures(imagePtr);
+    		extractFeatures(imagePtr);
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
    		auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
 		receivedImg = true;
@@ -151,7 +148,7 @@ public:
 		}
 
 		cudaFree(d_triplets);
-		cudaFree(d_trip_arr);
+		cudaFreeArray(d_trip_arr);
 	}
 
 	// Process an image that is read from disk. converted_kps contains keypoints stored in OpenCV format.
