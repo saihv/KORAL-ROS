@@ -22,7 +22,8 @@
 class FeatureMatcher {
 public:
 	uint64_t *d_descQ, *d_descT;
-	uint maxkpNum;
+	uint maxkpNum;	
+    std::vector<cv::DMatch> dmatches;
 
 private:
 	unsigned int kpTrain, kpQuery;
@@ -37,8 +38,6 @@ private:
 	struct cudaTextureDesc texDesc;
 	cudaTextureObject_t tex_q = 0;
 	int* d_matches;
-	
-    std::vector<cv::DMatch> dmatches;
 	cudaStream_t m_stream1, m_stream2;
 
 	int* h_matches;
@@ -68,6 +67,13 @@ public:
 
 		cudaMalloc(&d_matches, 4 * maxkpNum);
 		h_matches = reinterpret_cast<int*>(malloc(4 * kpQuery));
+	}
+
+	~FeatureMatcher()
+	{
+		cudaFree(d_descQ);
+		cudaFree(d_descT);
+		cudaFree(d_matches);
 	}
 
 	// Allocate memory and transfer descriptors for training image
@@ -104,12 +110,14 @@ public:
 		std::vector<int> h_matches(kpQuery);
 		cudaMemcpy(&h_matches[0], d_matches, 4 * kpQuery, cudaMemcpyDeviceToHost);
 		std::vector<Match> matches;
+		dmatches.clear();
 		for (size_t i = 0; i < kpQuery; ++i) {
 			if (h_matches[i] != -1) {
 				matches.emplace_back(i, h_matches[i]);
+				dmatches.emplace_back(h_matches[i], i, 0.0f);
 			}
 		}
-
+		
 		auto sec = static_cast<double>(duration_cast<nanoseconds>(end - start).count()) * 1e-9 / static_cast<double>(1);
 		std::cout << "Computed " << matches.size() << " matches in " << sec * 1e3 << " ms" << std::endl;		
 	}

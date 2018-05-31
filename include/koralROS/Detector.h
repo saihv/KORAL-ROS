@@ -20,7 +20,7 @@ public:
 	std::vector<Keypoint> kps;
 	std::vector<uint64_t> desc;
 	bool receivedImg = false;
-
+	std::vector<cv::KeyPoint> converted_kps;
 private:
 	struct Level {
 		uint8_t* d_img;
@@ -125,6 +125,7 @@ public:
 
 	~FeatureDetector()
 	{
+		freeGPUMemory();
 		cudaFree(d_triplets);
 		cudaFreeArray(d_trip_arr);
 	}
@@ -160,8 +161,7 @@ public:
 		detectAndDescribe(image.data, image.cols, image.rows, 60);
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
 		ROS_INFO("Detected %d features in %ld ms \n", kps.size(), duration_cast<milliseconds>( t2 - t1 ).count());
-		cv::Mat image_with_kps;
-		std::vector<cv::KeyPoint> converted_kps;
+		converted_kps.clear();
 		for (const auto& kp : kps) {
 			const float scale = static_cast<float>(std::pow(1.2f, kp.scale));
 			converted_kps.emplace_back(scale*static_cast<float>(kp.x), scale*static_cast<float>(kp.y), 7.0f*scale, 180.0f / 3.1415926535f * kp.angle, static_cast<float>(kp.score));
@@ -175,8 +175,7 @@ public:
 		detectAndDescribe(imagePtr->image.data, imagePtr->image.cols, imagePtr->image.rows, 60);
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
 		ROS_INFO("Detected %d features in %ld ms \n", kps.size(), duration_cast<milliseconds>( t2 - t1 ).count());
-		cv::Mat image_with_kps;
-		std::vector<cv::KeyPoint> converted_kps;
+		converted_kps.clear();
 		for (const auto& kp : kps) {
 			const float scale = static_cast<float>(std::pow(1.2f, kp.scale));
 			converted_kps.emplace_back(scale*static_cast<float>(kp.x), scale*static_cast<float>(kp.y), 7.0f*scale, 180.0f / 3.1415926535f * kp.angle, static_cast<float>(kp.score));

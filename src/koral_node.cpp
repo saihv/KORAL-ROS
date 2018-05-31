@@ -21,13 +21,20 @@ public:
 		std::cout << "Left camera: ";
 	   	detector.extractFeatures(imagePtr1);
 		matcher.setTrainingImage(detector.kps, detector.desc);
+		cv::drawKeypoints(imagePtr1->image, detector.converted_kps, image_with_kps_L, cv::Scalar::all(-1.0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		kpsL = detector.converted_kps;
 
 		imagePtr2 = cv_bridge::toCvCopy(img2, sensor_msgs::image_encodings::MONO8);
 		std::cout << "Right camera: ";
 		detector.extractFeatures(imagePtr2);
 		matcher.setQueryImage(detector.kps, detector.desc);
+		cv::drawKeypoints(imagePtr2->image, detector.converted_kps, image_with_kps_R, cv::Scalar::all(-1.0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		kpsR = detector.converted_kps;
 		detector.receivedImg = true;
 	}
+
+	cv::Mat image_with_kps_L, image_with_kps_R;
+	std::vector <cv::KeyPoint> kpsL, kpsR;
 
 private:
 	ros::NodeHandle node;
@@ -44,9 +51,8 @@ private:
 
 int main(int argc, char **argv)
 {
-  	ros::init(argc, argv, "image_listener");
+  	ros::init(argc, argv, "koralROS");
   	ros::NodeHandle nh;	
-  	image_transport::ImageTransport it(nh);
 
 	unsigned int width = 640;
 	unsigned int height = 480;
@@ -64,7 +70,17 @@ int main(int argc, char **argv)
 		ros::spinOnce();
 		if (detector.receivedImg) {
 			matcher.matchFeatures();
+			cv::Mat image_with_matches;
+			detector.converted_kps.clear();
+    		cv::drawMatches(koral.image_with_kps_L, koral.kpsL, koral.image_with_kps_R, koral.kpsR, matcher.dmatches, image_with_matches, cv::Scalar::all(-1.0), cv::Scalar::all(-1.0), std::vector<char>(), cv::DrawMatchesFlags::DEFAULT);
+    		cv::namedWindow("Matches", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO);
+    		cv::imshow("Matches", image_with_matches);
+			cv::waitKey(1);
 			detector.receivedImg = false;
 		}
 	}
+
+	detector.freeGPUMemory();
+	cudaDeviceReset();
+	return 0;
 }
