@@ -81,7 +81,7 @@ public:
 	}
 
 	// Allocate memory and transfer descriptors for training image
-	void setTrainingImage(std::vector<Keypoint> kps, std::vector<uint64_t> desc)
+	void setTrainingImage(std::vector<Keypoint> const &kps, std::vector<uint64_t> const &desc)
 	{
 		kpTrain = kps.size();
 		cudaMemsetAsync(d_descT, 0, 64 * (kpTrain + 8), m_stream1);
@@ -90,7 +90,7 @@ public:
 	}
 
 	// Allocate memory and transfer descriptors for query image
-	void setQueryImage(std::vector<Keypoint> kps, std::vector<uint64_t> desc)
+	void setQueryImage(std::vector<Keypoint> const &kps, std::vector<uint64_t> const &desc)
 	{
 		kpQuery = kps.size();
 		cudaMemsetAsync(d_descQ, 0, 64 * (kpQuery), m_stream2);
