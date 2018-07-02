@@ -27,7 +27,7 @@ public:
 
 private:
 	unsigned int kpTrain, kpQuery;
-	unsigned int matchThreshold;
+	const uint8_t matchThreshold;
 	struct Match {
 		int q, t;
 		Match() {}

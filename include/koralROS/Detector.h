@@ -51,10 +51,11 @@ private:
 	const unsigned int width;
 	const unsigned int height;
 	const unsigned int maxkp;
+	const uint8_t thresh;
 
 public:
-	FeatureDetector(const float _scale_factor, const uint8_t _scale_levels, const uint _width, const uint _height, const uint _maxkp) : 
-	scale_factor(_scale_factor), scale_levels(_scale_levels), width(_width), height(_height), maxkp(_maxkp)
+	FeatureDetector(const float _scale_factor, const uint8_t _scale_levels, const uint _width, const uint _height, const uint _maxkp, const uint8_t _thresh) : 
+	scale_factor(_scale_factor), scale_levels(_scale_levels), width(_width), height(_height), maxkp(_maxkp), thresh(_thresh)
 	{
 		// Setting cache and shared modes
 		cudaDeviceSetCacheConfig(cudaFuncCachePreferEqual);
@@ -155,7 +156,7 @@ public:
 	void imageReadProcess(cv::Mat image)
 	{
 		high_resolution_clock::time_point t1 = high_resolution_clock::now();
-		detectAndDescribe(image.data, image.cols, image.rows, 60);
+		detectAndDescribe(image.data, image.cols, image.rows, thresh);
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
 		ROS_INFO("Detected %d features in %ld ms \n", kps.size(), duration_cast<milliseconds>( t2 - t1 ).count());
 		converted_kps.clear();
@@ -169,7 +170,7 @@ public:
 	void extractFeatures(cv_bridge::CvImagePtr imagePtr)
 	{
 		high_resolution_clock::time_point t1 = high_resolution_clock::now();
-		detectAndDescribe(imagePtr->image.data, imagePtr->image.cols, imagePtr->image.rows, 60);
+		detectAndDescribe(imagePtr->image.data, imagePtr->image.cols, imagePtr->image.rows, thresh);
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
 		ROS_INFO("Detected %d features in %ld ms \n", kps.size(), duration_cast<milliseconds>( t2 - t1 ).count());
 		converted_kps.clear();

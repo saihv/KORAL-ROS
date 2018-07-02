@@ -43,7 +43,7 @@ __global__ void
 #ifndef __INTELLISENSE__
 __launch_bounds__(256, 0)
 #endif
-CUDAK2NN_kernel(const cudaTextureObject_t tex_q, const int num_q, const uint64_t* __restrict__ g_training, const int num_t, int* const __restrict__ g_match, const int threshold) {
+CUDAK2NN_kernel(const cudaTextureObject_t tex_q, const int num_q, const uint64_t* __restrict__ g_training, const int num_t, int* const __restrict__ g_match, const uint8_t threshold) {
 	uint64_t train = *(g_training += threadIdx.x & 7);
 	g_training += 8;
 	uint64_t q[8];
