@@ -4,6 +4,12 @@
 
 KORAL_ROS is a ROS based computer vision pipeline, which combines GPU based feature detection, description and matching. 
 
+**Main features:**
+
+* [KFAST](https://github.com/komrad36/KFAST): FAST(!!) corner detection using AVX2 instructions
+* [CLATCH](https://github.com/komrad36/CLATCH): CUDA based LATCH description for features, produces 512-bit binary descriptors. 
+* [CUDAK2NN](https://github.com/komrad36/CUDAK2NN): Extremely fast Hamming distance based brute force matching.
+
 This repository serves as an extension to [KORAL](https://github.com/komrad36/KORAL), an extremely fast, highly accurate, 
 scale- and rotation-invariant CPU-GPU cooperative detector-descriptor that uses FAST
 keypoints and LATCH descriptors, combining it with [CUDAK2NN](https://github.com/komrad36/CUDAK2NN), a super-fast GPU implementation 
@@ -14,7 +20,8 @@ In this repository, KORAL and CUDAK2NN have been adapted into a real time framew
 in succession on which detection and matching is performed. The sample code in koral_node.cpp subscribes to two ROS topics
 'imageL' and 'imageR', simulating left and right camera views, performs feature extraction on 
 both images and brute force matching between the two views. This is aimed at being a starting
-point for GPU based vision algorithms for autonomous vehicles.
+point for GPU based vision algorithms for autonomous vehicles: considering that feature detection and matching
+are some of the biggest bottlenecks, fast GPU based implementations can allow for real-time localization.
 
 **Dependencies:**
 
@@ -24,14 +31,34 @@ point for GPU based vision algorithms for autonomous vehicles.
 * OpenCV (for retrieving keypoints and matches)
 
 This code is meant only as an example to get started with, as numerous improvements can be 
-made to the current functionality (example: asynchronous detection for multiple images).
+made to the current functionality (example: asynchronous detection for multiple images). 
 
 **Sample benchmark:** (i7-6770HQ, GTX 1080)
 
-| Image resolution        | Detection (ms per image)           | Matching (ms)  |
+| Image resolution        | Detection (ms per image)           | Matching (ms per pair)  |
 | :-------------: |:-------------:| :-----:|
 | 640x480      | 3 | 1 |
-| 1920x1080      | 7.5      |   5 |
+| 1920x1080      | 7      |   4 |
+
+Note: Matching performance depends on the number of total feature points that need to be evaluated.
+
+**Parameters:** 
+
+Feature extraction:
+
+`FeatureDetector detector(scaleFactor, scaleLevels, width, height, maxFeatureCount, fastThreshold);`
+
+* `scaleFactor`: Coefficient by which one scale pyramid level is divided to obtain the next.
+* `scaleLevels`: Number of levels in the scale space. 
+* `fastThreshold`: Threshold intensity difference between pixels (for classifying as a corner).
+
+Feature matching:
+
+`FeatureMatcher matcher(matchThreshold, maxFeatureCount);`
+
+* `matchThreshold`: A match is returned if the best match between a query vector and a training vector is more than `matchThreshold` number of bits better than the second-best match.
+
+[1]
 
 # Licenses #
 **KORAL is licensed under the MIT License : https://opensource.org/licenses/mit-license.php**

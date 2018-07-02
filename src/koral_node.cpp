@@ -17,7 +17,7 @@ public:
 	void imageCallback(const sensor_msgs::ImageConstPtr& img1, const sensor_msgs::ImageConstPtr& img2)
 	{
 		cv_bridge::CvImagePtr imagePtr1, imagePtr2;
-	    imagePtr1 = cv_bridge::toCvCopy(img1, sensor_msgs::image_encodings::MONO8);
+	        imagePtr1 = cv_bridge::toCvCopy(img1, sensor_msgs::image_encodings::MONO8);
 		std::cout << "Left camera: ";
 	   	detector.extractFeatures(imagePtr1);
 		matcher.setTrainingImage(detector.kps, detector.desc);
@@ -57,8 +57,8 @@ int main(int argc, char **argv)
 	const unsigned int width = 640;
 	const unsigned int height = 480;
 	const unsigned int maxFeatureCount = 50000;
-	const uint8_t fastThreshold = 30;
-	const uint8_t matchThreshold = 5;
+	const uint8_t fastThreshold = 40;
+	const uint8_t matchThreshold = 25;
 
 	const unsigned int scaleLevels = 8;
 	const float scaleFactor = 1.2;
@@ -77,9 +77,9 @@ int main(int argc, char **argv)
 			matcher.matchFeatures();
 			cv::Mat image_with_matches;
 			detector.converted_kps.clear();
-    		cv::drawMatches(koral.image_with_kps_L, koral.kpsL, koral.image_with_kps_R, koral.kpsR, matcher.dmatches, image_with_matches, cv::Scalar::all(-1.0), cv::Scalar::all(-1.0), std::vector<char>(), cv::DrawMatchesFlags::DEFAULT);
-	    	cv::namedWindow("Matches", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO);
-    		cv::imshow("Matches", image_with_matches);
+    		        cv::drawMatches(koral.image_with_kps_L, koral.kpsL, koral.image_with_kps_R, koral.kpsR, matcher.dmatches, image_with_matches, cv::Scalar::all(-1.0), cv::Scalar::all(-1.0), std::vector<char>(), cv::DrawMatchesFlags::DEFAULT);
+	    	        cv::namedWindow("Matches", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO);
+    		        cv::imshow("Matches", image_with_matches);
 			cv::waitKey(1);
 			detector.receivedImg = false;
 		}
